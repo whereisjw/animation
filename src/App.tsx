@@ -1,8 +1,7 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useRef } from 'react';
 import './App.css';
 import styled,{createGlobalStyle} from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400&family=Source+Sans+3:wght@300;400&display=swap');
@@ -59,7 +58,7 @@ table {
 body{
   font-family: 'Noto Sans', sans-serif;
   background: linear-gradient(135deg,#e09,#d0e);
-  color:black
+  color:black;
 }
 a{
   text-decoration: none;
@@ -83,61 +82,45 @@ const Box = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(2,1fr);
 `;
-const Circle = styled(motion.div)`
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
-    background: white;
-    height: 70px;
-    width:70px;
-    border-radius: 50%;
-place-self: center;
-`
 
-const myVars = {
-  start:{ scale:0},
-  end:{scale:1,rotateZ:360,transition:{type:"spring",damping:5,delay:0.5}}
-}
 
-const boxVars = {
-  start:{
-    opacity:0,
-    scale:0.5,
-  },
-  end:{
-    opacity:1,
-    scale:1,
-    transition:{
-      type:"spring",
-      duration:1,
-      bounce:0.5,
-      /* delayChildren:0.5 */
-      staggerChildren:0.8
-    }
-  }
-}
 
-const circleVars = {
-  start:{
-    opacity:0,
-    y:10,
-  },
-  end:{
-    opacity:1,
-    y:0,
-  }
-}
+
+/* const BiggerBox= styled.div`
+  width: 600px;
+  height: 600px;
+  box-flex-group: rgba(255,255,255,0.25);
+  border-radius: 40px;
+  border: 1px solid red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+` */
+
+/* const boxVars = {
+hover:{scale:2, rotate:90},
+click:{scale:1,borderRadius:"100%"},
+drag:{background:"green",transition:{duration:2}}
+} */
+
+
 
 function App() {
+const x = useMotionValue(0)
+const potato = useTransform(x,[-800,0,800], [2,1,0.1])
+useEffect(()=>{
+  potato.onChange(()=>{console.log(potato.get());
+})
+},[x])
+
+
   return (
-    
 <>
       <GlobalStyle/>
         <Wrapper>
-        <Box variants={boxVars} initial="start" animate="end">
-          <Circle variants={circleVars}></Circle>
-          <Circle variants={circleVars}></Circle>
-          <Circle variants={circleVars}></Circle>
-          <Circle variants={circleVars}></Circle>
-        </Box>
+          <button onClick={()=>x.set(200)}>클릭미</button>
+        <Box style={{x,scale:potato}} drag='x' dragSnapToOrigin/>
       </Wrapper>
 </>
   );
