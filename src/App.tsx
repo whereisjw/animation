@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import './App.css';
-import styled,{createGlobalStyle} from 'styled-components';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
+import React, { useEffect, useRef, useState } from "react";
+import "./App.css";
+import styled, { createGlobalStyle } from "styled-components";
+import { AnimatePresence, motion } from "framer-motion";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400&family=Source+Sans+3:wght@300;400&display=swap');
@@ -66,63 +66,70 @@ a{
 }
 `;
 
-const Wrapper = styled.div`
-  height: 100vh;
+const Wrapper = styled(motion.div)`
+  height: 200vh;
   width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  background: linear-gradient(135deg, rgb(0, 71, 238), rgb(49, 53, 87));
 `;
 const Box = styled(motion.div)`
   width: 200px;
   height: 200px;
-  background-color: rgba(255,255,255,0.2);
+  background-color: rgba(255, 255, 255, 0.2);
   border-radius: 15px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
   display: grid;
-  grid-template-columns: repeat(2,1fr);
+  grid-template-columns: repeat(2, 1fr);
 `;
-
-
-
-
-/* const BiggerBox= styled.div`
-  width: 600px;
-  height: 600px;
-  box-flex-group: rgba(255,255,255,0.25);
-  border-radius: 40px;
-  border: 1px solid red;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-` */
-
-/* const boxVars = {
-hover:{scale:2, rotate:90},
-click:{scale:1,borderRadius:"100%"},
-drag:{background:"green",transition:{duration:2}}
-} */
-
-
-
+const Svg = styled.svg`
+  width: 300px;
+  color: white;
+  height: 300px;
+  path {
+    stroke: white;
+    stroke-width: 1;
+  }
+`;
 function App() {
-const x = useMotionValue(0)
-const potato = useTransform(x,[-800,0,800], [2,1,0.1])
-useEffect(()=>{
-  potato.onChange(()=>{console.log(potato.get());
-})
-},[x])
+  const [show, setShow] = useState(false);
+  const clickToggle = () => setShow((show) => !show);
 
+  const boxVars = {
+    start: {
+      opacity: 0,
+      scale: 0,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      rotateZ: 360,
+    },
+    leaving: {
+      opacity: 0,
+      y: 20,
+    },
+  };
 
   return (
-<>
-      <GlobalStyle/>
-        <Wrapper>
-          <button onClick={()=>x.set(200)}>클릭미</button>
-        <Box style={{x,scale:potato}} drag='x' dragSnapToOrigin/>
+    <>
+      <GlobalStyle />
+      <Wrapper>
+        <button onClick={clickToggle}>Click</button>
+        <AnimatePresence>
+          {show ? (
+            <Box
+              variants={boxVars}
+              initial="start"
+              animate="visible"
+              exit="leaving"
+            />
+          ) : null}
+        </AnimatePresence>
       </Wrapper>
-</>
+    </>
   );
 }
 
